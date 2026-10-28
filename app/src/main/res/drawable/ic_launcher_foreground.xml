@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer acoustic wave rings -->
+    <path
+        android:fillColor="#06B6D4"
+        android:pathData="M26,46 C26,44.34 27.34,43 29,43 C30.66,43 32,44.34 32,46 L32,62 C32,63.66 30.66,65 29,65 C27.34,65 26,63.66 26,62 Z" />
+    <path
+        android:fillColor="#06B6D4"
+        android:pathData="M76,46 C76,44.34 77.34,43 79,43 C80.66,43 82,44.34 82,46 L82,62 C82,63.66 80.66,65 79,65 C77.34,65 76,63.66 76,62 Z" />
+    <path
+        android:fillColor="#A855F7"
+        android:pathData="M35,38 C35,36.34 36.34,35 38,35 C39.66,35 41,36.34 41,38 L41,70 C41,71.66 39.66,73 38,73 C36.34,73 35,71.66 35,70 Z" />
+    <path
+        android:fillColor="#A855F7"
+        android:pathData="M67,38 C67,36.34 68.34,35 70,35 C71.66,35 73,36.34 73,38 L73,70 C73,71.66 71.66,73 70,73 C68.34,73 67,71.66 67,70 Z" />
+    <!-- Studio condenser microphone capsule -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,28 C48.48,28 44,32.48 44,38 L44,54 C44,59.52 48.48,64 54,64 C59.52,64 64,59.52 64,54 L64,38 C64,32.48 59.52,28 54,28 Z" />
+    <!-- Microphone cradle & stand -->
+    <path
+        android:fillColor="#22D3EE"
+        android:pathData="M38,52 L42,52 C42,58.63 47.37,64 54,64 C60.63,64 66,58.63 66,52 L70,52 C70,60.15 63.9,66.87 56,67.87 L56,76 L63,76 C64.1,76 65,76.9 65,78 C65,79.1 64.1,80 63,80 L45,80 C43.9,80 43,79.1 43,78 C43,76.9 43.9,76 45,76 L52,76 L52,67.87 C44.1,66.87 38,60.15 38,52 Z" />
+</vector>

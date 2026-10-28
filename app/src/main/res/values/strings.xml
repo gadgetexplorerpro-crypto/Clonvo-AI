@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Clonvo AI</string>
+    <string name="studio_tagline">Professional AI Voice Cloning &amp; Acoustic Synthesis Studio</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_clone">Clone</string>
+    <string name="nav_studio">Studio</string>
+    <string name="nav_library">Library</string>
+    <string name="nav_profile">Profile</string>
+    <string name="ai_disclosure_badge">AI-Generated Voice • Authorized Speaker Clone</string>
+</resources>

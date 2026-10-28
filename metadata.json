@@ -1,0 +1,6 @@
+{
+  "name": "Clonvo AI",
+  "description": "Professional AI voice cloning studio for instant voice cloning, text-to-speech synthesis, voice-to-voice conversion, and vocal similarity analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="640dp"
+    android:height="360dp"
+    android:viewportWidth="640"
+    android:viewportHeight="360">
+    <path android:pathData="M0,0h640v360h-640z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="0"
+                android:startY="0"
+                android:endX="640"
+                android:endY="360"
+                android:type="linear">
+                <item android:color="#090B14" android:offset="0.0" />
+                <item android:color="#191136" android:offset="0.5" />
+                <item android:color="#0B2239" android:offset="1.0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Glowing acoustic wave bars -->
+    <path android:fillColor="#338B5CF6" android:pathData="M80,140 h12 v80 h-12 z" />
+    <path android:fillColor="#668B5CF6" android:pathData="M110,100 h12 v160 h-12 z" />
+    <path android:fillColor="#99A855F7" android:pathData="M140,70 h12 v220 h-12 z" />
+    <path android:fillColor="#CC06B6D4" android:pathData="M170,110 h12 v140 h-12 z" />
+    <path android:fillColor="#FF22D3EE" android:pathData="M200,60 h12 v240 h-12 z" />
+    <path android:fillColor="#CC8B5CF6" android:pathData="M230,90 h12 v180 h-12 z" />
+    <path android:fillColor="#9906B6D4" android:pathData="M260,125 h12 v110 h-12 z" />
+    <path android:fillColor="#CC06B6D4" android:pathData="M368,125 h12 v110 h-12 z" />
+    <path android:fillColor="#CC8B5CF6" android:pathData="M398,90 h12 v180 h-12 z" />
+    <path android:fillColor="#FF22D3EE" android:pathData="M428,60 h12 v240 h-12 z" />
+    <path android:fillColor="#CC06B6D4" android:pathData="M458,110 h12 v140 h-12 z" />
+    <path android:fillColor="#99A855F7" android:pathData="M488,70 h12 v220 h-12 z" />
+    <path android:fillColor="#668B5CF6" android:pathData="M518,100 h12 v160 h-12 z" />
+    <path android:fillColor="#338B5CF6" android:pathData="M548,140 h12 v80 h-12 z" />
+    <!-- Center Studio Condenser Icon -->
+    <path android:fillColor="#FFFFFF" android:pathData="M320,105 C304,105 292,117 292,133 L292,185 C292,201 304,213 320,213 C336,213 348,201 348,185 L348,133 C348,117 336,105 320,105 Z" />
+    <path android:fillColor="#22D3EE" android:pathData="M276,180 L286,180 C286,198.78 301.22,214 320,214 C338.78,214 354,198.78 354,180 L364,180 C364,202.5 347.2,221.1 325,223.7 L325,250 L345,250 L345,260 L295,260 L295,250 L315,250 L315,223.7 C292.8,221.1 276,202.5 276,180 Z" />
+</vector>

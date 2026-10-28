@@ -1,0 +1,294 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated user account profile, subscription plan tier, and server-side credit balance.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the authenticated Google user."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name (1 to 80 characters)."
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address (3 to 120 characters)."
+        },
+        "planTier": {
+          "type": "string",
+          "enum": ["free_trial", "starter", "pro", "business"],
+          "description": "Active subscription tier."
+        },
+        "creditsRemaining": {
+          "type": "integer",
+          "description": "Available voice generation and cloning credits."
+        },
+        "creditsUsed": {
+          "type": "integer",
+          "description": "Cumulative credits consumed by API usage."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation server timestamp (FieldValue.serverTimestamp())."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update server timestamp (FieldValue.serverTimestamp())."
+        }
+      },
+      "required": [
+        "userId",
+        "displayName",
+        "email",
+        "planTier",
+        "creditsRemaining",
+        "creditsUsed",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "VoiceProfile": {
+      "title": "VoiceProfile",
+      "description": "Authorized cloned voice profile linked to ElevenLabs voice ID and acoustic metrics.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "name": {
+          "type": "string",
+          "description": "Custom voice profile name (1 to 60 characters)."
+        },
+        "elevenLabsVoiceId": {
+          "type": "string",
+          "description": "Real ElevenLabs voice_id returned by POST /v1/voices/add."
+        },
+        "description": {
+          "type": "string",
+          "description": "Voice characteristics and accent notes (up to 300 characters)."
+        },
+        "consentStatement": {
+          "type": "string",
+          "description": "Explicit recorded speaker consent phrase (10 to 500 characters)."
+        },
+        "consentVerified": {
+          "type": "boolean",
+          "description": "Must be true indicating explicit voice-owner consent."
+        },
+        "sampleDurationSec": {
+          "type": "number",
+          "description": "Duration of the reference voice recording in seconds (15 to 300)."
+        },
+        "clarityScore": {
+          "type": "number",
+          "description": "Measured SNR/clarity score from 0 to 100."
+        },
+        "noiseDb": {
+          "type": "number",
+          "description": "Estimated background noise floor in dBFS."
+        },
+        "fundamentalFreqHz": {
+          "type": "number",
+          "description": "Measured median fundamental frequency (F0) in Hz."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ready", "cloning", "failed"],
+          "description": "Current cloning status."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when cloned."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when updated."
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "elevenLabsVoiceId",
+        "description",
+        "consentStatement",
+        "consentVerified",
+        "sampleDurationSec",
+        "clarityScore",
+        "noiseDb",
+        "fundamentalFreqHz",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "VoiceGeneration": {
+      "title": "VoiceGeneration",
+      "description": "Generated speech or voice-to-voice conversion record with similarity metrics and AI disclosure.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Owner user UID."
+        },
+        "voiceId": {
+          "type": "string",
+          "description": "Firestore voice profile ID or ElevenLabs voice ID."
+        },
+        "voiceName": {
+          "type": "string",
+          "description": "Display name of the voice used."
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["tts", "sts"],
+          "description": "Generation mode: tts (Text-to-Speech) or sts (Speech-to-Speech)."
+        },
+        "inputText": {
+          "type": "string",
+          "description": "Input prompt text or speech conversion description (1 to 2500 chars)."
+        },
+        "modelId": {
+          "type": "string",
+          "description": "ElevenLabs model identifier used."
+        },
+        "languageCode": {
+          "type": "string",
+          "description": "ISO language code for synthesis."
+        },
+        "stability": {
+          "type": "number",
+          "description": "Voice stability setting (0.0 to 1.0)."
+        },
+        "similarityBoost": {
+          "type": "number",
+          "description": "Similarity boost setting (0.0 to 1.0)."
+        },
+        "styleExaggeration": {
+          "type": "number",
+          "description": "Style exaggeration setting (0.0 to 1.0)."
+        },
+        "speed": {
+          "type": "number",
+          "description": "Speech speed multiplier (0.5 to 2.0)."
+        },
+        "localAudioPath": {
+          "type": "string",
+          "description": "Encrypted/app-private local file path to generated audio."
+        },
+        "measuredF0Hz": {
+          "type": "number",
+          "description": "Measured fundamental frequency (F0) of generated audio in Hz."
+        },
+        "measuredSimilarityScore": {
+          "type": "number",
+          "description": "Acoustic F0/spectral similarity score (0 to 100) compared against reference voice."
+        },
+        "creditsCharged": {
+          "type": "integer",
+          "description": "Credits deducted for this synthesis."
+        },
+        "isFavorite": {
+          "type": "boolean",
+          "description": "Whether the user favorited this generation."
+        },
+        "aiDisclosureLabeled": {
+          "type": "boolean",
+          "description": "Must be true to enforce AI-generated audio labeling."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when generated."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when updated."
+        }
+      },
+      "required": [
+        "userId",
+        "voiceId",
+        "voiceName",
+        "mode",
+        "inputText",
+        "modelId",
+        "languageCode",
+        "stability",
+        "similarityBoost",
+        "styleExaggeration",
+        "speed",
+        "localAudioPath",
+        "measuredF0Hz",
+        "measuredSimilarityScore",
+        "creditsCharged",
+        "isFavorite",
+        "aiDisclosureLabeled",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AbuseReport": {
+      "title": "AbuseReport",
+      "description": "Safety and moderation report for suspected unauthorized voice use or impersonation.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Reporting user UID."
+        },
+        "targetVoiceId": {
+          "type": "string",
+          "description": "Identifier of the reported voice or generation."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Detailed report reason (5 to 500 characters)."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["submitted", "reviewed"],
+          "description": "Moderation status."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when submitted."
+        }
+      },
+      "required": [
+        "userId",
+        "targetVoiceId",
+        "reason",
+        "status",
+        "createdAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Per-user account profile, subscription plan, and credit ledger."
+    },
+    "/voices/{voiceId}": {
+      "schema": { "$ref": "#/entities/VoiceProfile" },
+      "description": "Reusable cloned voice profiles owned by authenticated users."
+    },
+    "/generations/{generationId}": {
+      "schema": { "$ref": "#/entities/VoiceGeneration" },
+      "description": "Generated TTS and Speech-to-Speech audio records scoped by userId."
+    },
+    "/abuse_reports/{reportId}": {
+      "schema": { "$ref": "#/entities/AbuseReport" },
+      "description": "Safety and abuse reports submitted by authenticated users."
+    }
+  }
+}

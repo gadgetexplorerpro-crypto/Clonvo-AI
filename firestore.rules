@@ -1,0 +1,201 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isNumber(val) {
+      return val is int || val is float;
+    }
+
+    function isValidUserProfile(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 80 &&
+             data.email is string && data.email.size() >= 3 && data.email.size() <= 120 &&
+             data.planTier is string && data.planTier in ['free_trial', 'starter', 'pro', 'business'] &&
+             data.creditsRemaining is int && data.creditsRemaining >= 0 && data.creditsRemaining <= 1000000 &&
+             data.creditsUsed is int && data.creditsUsed >= 0 && data.creditsUsed <= 10000000 &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidVoiceProfile(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 60 &&
+             data.elevenLabsVoiceId is string && data.elevenLabsVoiceId.size() >= 1 && data.elevenLabsVoiceId.size() <= 120 &&
+             data.description is string && data.description.size() <= 300 &&
+             data.consentStatement is string && data.consentStatement.size() >= 10 && data.consentStatement.size() <= 500 &&
+             data.consentVerified is bool && data.consentVerified == true &&
+             isNumber(data.sampleDurationSec) && data.sampleDurationSec >= 15 && data.sampleDurationSec <= 300 &&
+             isNumber(data.clarityScore) && data.clarityScore >= 0 && data.clarityScore <= 100 &&
+             isNumber(data.noiseDb) && data.noiseDb >= -120 && data.noiseDb <= 0 &&
+             isNumber(data.fundamentalFreqHz) && data.fundamentalFreqHz >= 50 && data.fundamentalFreqHz <= 500 &&
+             data.status is string && data.status in ['ready', 'cloning', 'failed'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidVoiceGeneration(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.voiceId is string && data.voiceId.size() >= 1 && data.voiceId.size() <= 120 &&
+             data.voiceName is string && data.voiceName.size() >= 1 && data.voiceName.size() <= 60 &&
+             data.mode is string && data.mode in ['tts', 'sts'] &&
+             data.inputText is string && data.inputText.size() >= 1 && data.inputText.size() <= 2500 &&
+             data.modelId is string && data.modelId.size() >= 1 && data.modelId.size() <= 80 &&
+             data.languageCode is string && data.languageCode.size() >= 2 && data.languageCode.size() <= 16 &&
+             isNumber(data.stability) && data.stability >= 0 && data.stability <= 1 &&
+             isNumber(data.similarityBoost) && data.similarityBoost >= 0 && data.similarityBoost <= 1 &&
+             isNumber(data.styleExaggeration) && data.styleExaggeration >= 0 && data.styleExaggeration <= 1 &&
+             isNumber(data.speed) && data.speed >= 0.5 && data.speed <= 2.0 &&
+             data.localAudioPath is string && data.localAudioPath.size() <= 500 &&
+             isNumber(data.measuredF0Hz) && data.measuredF0Hz >= 0 && data.measuredF0Hz <= 600 &&
+             isNumber(data.measuredSimilarityScore) && data.measuredSimilarityScore >= 0 && data.measuredSimilarityScore <= 100 &&
+             data.creditsCharged is int && data.creditsCharged >= 0 && data.creditsCharged <= 10000 &&
+             data.isFavorite is bool &&
+             data.aiDisclosureLabeled is bool && data.aiDisclosureLabeled == true &&
+             data.createdAt is timestamp && data.createdAt <= request.time &&
+             data.updatedAt is timestamp && data.updatedAt <= request.time;
+    }
+
+    function isValidAbuseReport(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.targetVoiceId is string && data.targetVoiceId.size() >= 1 && data.targetVoiceId.size() <= 120 &&
+             data.reason is string && data.reason.size() >= 5 && data.reason.size() <= 500 &&
+             data.status is string && data.status in ['submitted', 'reviewed'] &&
+             data.createdAt is timestamp && data.createdAt <= request.time;
+    }
+
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(userId) &&
+                       request.auth.uid == userId &&
+                       incoming().keys().hasAll([
+                         'userId', 'displayName', 'email', 'planTier',
+                         'creditsRemaining', 'creditsUsed', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'displayName', 'email', 'planTier',
+                         'creditsRemaining', 'creditsUsed', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidUserProfile(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(userId) &&
+                       request.auth.uid == userId &&
+                       isValidUserProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'displayName', 'planTier', 'creditsRemaining', 'creditsUsed', 'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+    }
+
+    match /voices/{voiceId} {
+      allow get: if isSignedIn() && isValidId(voiceId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(voiceId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'name', 'elevenLabsVoiceId', 'description',
+                         'consentStatement', 'consentVerified', 'sampleDurationSec',
+                         'clarityScore', 'noiseDb', 'fundamentalFreqHz', 'status',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'name', 'elevenLabsVoiceId', 'description',
+                         'consentStatement', 'consentVerified', 'sampleDurationSec',
+                         'clarityScore', 'noiseDb', 'fundamentalFreqHz', 'status',
+                         'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidVoiceProfile(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(voiceId) &&
+                       existing().userId == request.auth.uid &&
+                       isValidVoiceProfile(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'name', 'description', 'status', 'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(voiceId) && existing().userId == request.auth.uid;
+    }
+
+    match /generations/{generationId} {
+      allow get: if isSignedIn() && isValidId(generationId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(generationId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'voiceId', 'voiceName', 'mode', 'inputText',
+                         'modelId', 'languageCode', 'stability', 'similarityBoost',
+                         'styleExaggeration', 'speed', 'localAudioPath',
+                         'measuredF0Hz', 'measuredSimilarityScore', 'creditsCharged',
+                         'isFavorite', 'aiDisclosureLabeled', 'createdAt', 'updatedAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'voiceId', 'voiceName', 'mode', 'inputText',
+                         'modelId', 'languageCode', 'stability', 'similarityBoost',
+                         'styleExaggeration', 'speed', 'localAudioPath',
+                         'measuredF0Hz', 'measuredSimilarityScore', 'creditsCharged',
+                         'isFavorite', 'aiDisclosureLabeled', 'createdAt', 'updatedAt'
+                       ]) &&
+                       isValidVoiceGeneration(incoming());
+
+      allow update: if isSignedIn() &&
+                       isValidId(generationId) &&
+                       existing().userId == request.auth.uid &&
+                       isValidVoiceGeneration(incoming()) &&
+                       incoming().userId == existing().userId &&
+                       incoming().createdAt == existing().createdAt &&
+                       incoming().diff(existing()).affectedKeys().hasOnly([
+                         'isFavorite', 'localAudioPath', 'updatedAt'
+                       ]);
+
+      allow delete: if isSignedIn() && isValidId(generationId) && existing().userId == request.auth.uid;
+    }
+
+    match /abuse_reports/{reportId} {
+      allow get: if isSignedIn() && isValidId(reportId) && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      allow create: if isSignedIn() &&
+                       isValidId(reportId) &&
+                       incoming().keys().hasAll([
+                         'userId', 'targetVoiceId', 'reason', 'status', 'createdAt'
+                       ]) &&
+                       incoming().keys().hasOnly([
+                         'userId', 'targetVoiceId', 'reason', 'status', 'createdAt'
+                       ]) &&
+                       isValidAbuseReport(incoming());
+
+      allow update, delete: if false;
+    }
+  }
+}
