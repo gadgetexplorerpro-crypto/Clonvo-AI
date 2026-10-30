@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Clonvo AI — Project Console</title>
+<style>
+  :root {
+    --obsidian: #070913;
+    --navy: #0e1324;
+    --surface: #151c33;
+    --card: #1c2541;
+    --purple: #8b5cf6;
+    --purple-bright: #a855f7;
+    --cyan: #06b6d4;
+    --cyan-bright: #22d3ee;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --ink: #f8fafc;
+    --muted: #94a3b8;
+    --line: rgba(148, 163, 184, 0.18);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background:
+      radial-gradient(1100px 520px at 12% -12%, #241a52 0%, transparent 62%),
+      radial-gradient(900px 460px at 100% 0%, #072b34 0%, transparent 55%),
+      var(--obsidian);
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 22px 56px; }
+  .grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: 28px; align-items: start; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid rgba(139, 92, 246, 0.45);
+    background: rgba(139, 92, 246, 0.12);
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #d8c9ff;
+  }
+  h1 { font-size: clamp(30px, 4.4vw, 46px); line-height: 1.05; margin: 18px 0 10px; letter-spacing: -0.02em; }
+  h1 span {
+    background: linear-gradient(92deg, var(--purple-bright), var(--cyan-bright));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lede { color: var(--muted); font-size: 15.5px; line-height: 1.6; margin: 0; max-width: 56ch; }
+  .panel {
+    margin-top: 26px; padding: 20px; border-radius: 18px;
+    background: linear-gradient(180deg, rgba(28, 37, 65, 0.9), rgba(14, 19, 36, 0.9));
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 60px -34px rgba(0, 0, 0, 0.9);
+  }
+  .panel h2 {
+    margin: 0 0 14px; font-size: 12px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+  .svc { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 0; border-top: 1px solid var(--line); }
+  .svc:first-of-type { border-top: 0; padding-top: 0; }
+  .svc-name { font-size: 14.5px; font-weight: 600; }
+  .svc-meta { font-size: 12px; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.14); flex: none; }
+  .state { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 5px 10px; border-radius: 999px; background: rgba(148, 163, 184, 0.1); color: var(--muted); white-space: nowrap; }
+  .state.up { color: #a7f3d0; background: rgba(16, 185, 129, 0.14); }
+  .state.up .dot { background: var(--green); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.16); }
+  .state.down { color: #fecaca; background: rgba(239, 68, 68, 0.14); }
+  .state.down .dot { background: var(--red); box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.16); }
+  label.field { display: block; font-size: 12px; color: var(--muted); margin-bottom: 7px; letter-spacing: 0.04em; }
+  input[type="text"] {
+    width: 100%; padding: 11px 13px; border-radius: 11px; color: var(--ink);
+    background: rgba(7, 9, 19, 0.72); border: 1px solid var(--line);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px;
+  }
+  input[type="text"]:focus { outline: 2px solid rgba(6, 182, 212, 0.5); outline-offset: 1px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+  button {
+    cursor: pointer; border-radius: 11px; padding: 9px 13px; font-size: 13px; font-weight: 600;
+    color: var(--ink); background: var(--card); border: 1px solid var(--line);
+    font-family: inherit; transition: transform 0.12s ease, background 0.15s ease;
+  }
+  button:hover { background: #232f52; }
+  button:active { transform: translateY(1px); }
+  button.primary { background: linear-gradient(96deg, var(--purple), var(--cyan)); border-color: transparent; }
+  pre {
+    margin: 14px 0 0; padding: 14px; border-radius: 12px; min-height: 86px; max-height: 260px; overflow: auto;
+    background: rgba(7, 9, 19, 0.86); border: 1px solid var(--line);
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.4px; line-height: 1.55;
+    color: #cbd5f5; white-space: pre-wrap; word-break: break-word;
+  }
+  .phone {
+    padding: 14px; border-radius: 30px; border: 1px solid var(--line);
+    background: linear-gradient(180deg, #1b2340, #0b0f1d);
+    box-shadow: 0 40px 80px -40px rgba(139, 92, 246, 0.5);
+  }
+  .phone img { display: block; width: 100%; border-radius: 20px; }
+  .caption { margin: 14px 4px 0; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+  .note { margin-top: 18px; font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .note code { color: #c7d2fe; background: rgba(148, 163, 184, 0.12); padding: 1px 6px; border-radius: 6px; font-size: 12px; }
+  footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); font-size: 12px; color: #64748b; }
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: minmax(0, 1fr); }
+    .wrap { padding: 26px 16px 40px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="grid">
+    <div>
+      <span class="badge">Native Android · Kotlin + Jetpack Compose</span>
+      <h1>Clonvo <span>AI</span> console</h1>
+      <p class="lede">
+        Professional AI voice cloning studio: instant voice cloning, text-to-speech synthesis,
+        voice-to-voice conversion and vocal similarity analysis. The app itself is a native
+        Android client, so this browser preview shows the services that run here — the ElevenLabs
+        proxy API and the Firebase Auth / Firestore emulators the app talks to.
+      </p>
+
+      <section class="panel">
+        <h2>Live services</h2>
+        <div class="svc" data-svc="api">
+          <div>
+            <div class="svc-name">API · backend/server.js</div>
+            <div class="svc-meta">node --watch · :8090</div>
+          </div>
+          <span class="state"><span class="dot"></span><span class="label">checking…</span></span>
+        </div>
+        <div class="svc" data-svc="firestore">
+          <div>
+            <div class="svc-name">Firestore emulator</div>
+            <div class="svc-meta">rules from firestore.rules · :8085</div>
+          </div>
+          <span class="state"><span class="dot"></span><span class="label">checking…</span></span>
+        </div>
+        <div class="svc" data-svc="auth">
+          <div>
+            <div class="svc-name">Firebase Auth emulator</div>
+            <div class="svc-meta">Google sign-in for the Android client · :9099</div>
+          </div>
+          <span class="state"><span class="dot"></span><span class="label">checking…</span></span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>API playground</h2>
+        <label class="field" for="token">Firebase ID token (any non-empty value for the emulators)</label>
+        <input id="token" type="text" value="demo-id-token" autocomplete="off" spellcheck="false" />
+        <div class="actions">
+          <button class="primary" data-call="GET /api/voices">GET voices</button>
+          <button data-call="POST /api/voices/clone">POST clone</button>
+          <button data-call="POST /api/voices/generate">POST generate</button>
+          <button data-call="POST /api/voices/convert">POST convert</button>
+        </div>
+        <pre id="out">Pick a request to see the API response.</pre>
+      </section>
+    </div>
+
+    <div>
+      <div class="phone">
+        <img src="/assets/aistudio/Screenshot_20261028-154620_97099b34.png" alt="Clonvo AI Android studio screen" />
+      </div>
+      <p class="caption">
+        The Android client (Compose navigation: Home, Clone, Studio, Library, Profile).
+        Install it with <code>./gradlew installDebug</code> from the repo root, pointing
+        <code>firebase.json</code>'s emulator hosts at this sandbox when running on a device.
+      </p>
+      <p class="note">
+        ElevenLabs calls need <code>ELEVENLABS_API_KEY</code>. Until it is set, the API answers
+        <code>503</code> for voice listing and the app shows its “API key not configured” state.
+      </p>
+    </div>
+  </div>
+  <footer>Clonvo AI · Base44 development environment · preview entry point on port 3000</footer>
+</div>
+
+<script>
+  const token = () => document.getElementById("token").value.trim() || "demo-id-token";
+
+  function paint(name, ok, detail) {
+    const row = document.querySelector('[data-svc="' + name + '"]');
+    if (!row) return;
+    const state = row.querySelector(".state");
+    state.className = "state " + (ok === null ? "" : ok ? "up" : "down");
+    state.querySelector(".label").textContent = detail;
+  }
+
+  async function probe(name, url, accept) {
+    const started = performance.now();
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      const ms = Math.round(performance.now() - started);
+      paint(name, accept(res.status), res.status + " · " + ms + " ms");
+    } catch (err) {
+      paint(name, false, "unreachable");
+    }
+  }
+
+  const checks = () => {
+    probe("api", "/api/voices", (s) => s === 401 || s === 200 || s === 503);
+    probe("firestore", "/firestore/", (s) => s < 500);
+    probe("auth", "/auth-emulator/", (s) => s < 500);
+  };
+
+  async function call(label) {
+    const [method, path] = label.split(" ");
+    const out = document.getElementById("out");
+    out.textContent = method + " " + path + " …";
+    try {
+      const res = await fetch(path, {
+        method,
+        headers: { Authorization: "Bearer " + token(), "Content-Type": "application/json" },
+        body: method === "GET" ? undefined : "{}",
+      });
+      const text = await res.text();
+      let body = text;
+      try { body = JSON.stringify(JSON.parse(text), null, 2); } catch (_) {}
+      out.textContent = "HTTP " + res.status + "\n\n" + body;
+    } catch (err) {
+      out.textContent = "Request failed: " + err.message;
+    }
+  }
+
+  document.querySelectorAll("button[data-call]").forEach((btn) => {
+    btn.addEventListener("click", () => call(btn.dataset.call));
+  });
+
+  checks();
+  setInterval(checks, 15000);
+</script>
+</body>
+</html>
